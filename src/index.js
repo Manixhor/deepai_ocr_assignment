@@ -68,9 +68,9 @@ const PAGE = `<!doctype html>
         <label for="model">Pick the style that suits you</label>
         <select id="model" name="model">
           <option value="llama-3.2-1b">Llama 3.2 1B — Quick response</option>
-          <option value="llama-3.1-8b">Llama 3.1 8B Fast — More detailed</option>
+          <option value="llama-3.1-8b">Llama 3.1 8B Fast — More detailed response</option>
         </select>
-        <p class="hint">For a more detailed prompt, choose Llama 3.1 8B Fast.</p>
+        <p class="hint">For a more detailed response, choose Llama 3.1 8B Fast.</p>
       </div>
       <div class="field">
         <label for="scenario">What would you like the AI to help you with?</label>

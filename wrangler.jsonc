@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "promptcraft-worker",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-15",
+  "ai": {
+    "binding": "AI"
+  }
+}

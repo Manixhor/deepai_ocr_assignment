@@ -1,6 +1,11 @@
 # PromptCraft
 
-PromptCraft is a small Cloudflare Worker app that turns a scenario into a copy-ready prompt. It uses Cloudflare Workers AI and offers two text models: Llama 3.2 1B for faster generation and Llama 3.1 8B FP8 for a more capable option.
+PromptCraft turns a scenario into a copy-ready prompt using Cloudflare Workers AI. It offers two model choices:
+
+- **Llama 3.2 1B (faster)** for quick generation.
+- **Llama 3.1 8B Fast (more capable)** for stronger prompt generation with Cloudflare's fast 8B model variant.
+
+The Worker caps generated responses at 400 tokens to keep prompts concise and reduce generation time.
 
 Live deployment: [promptcraft-worker.promptcraft-worker.workers.dev](https://promptcraft-worker.promptcraft-worker.workers.dev/)
 
@@ -21,6 +26,12 @@ npx wrangler login
 
 The Worker is connected to Workers AI through the `AI` binding in `wrangler.jsonc`.
 
+Run the automated checks with:
+
+```sh
+npm test
+```
+
 ## API
 
 The app provides a page at `/` and a JSON endpoint at `POST /generate-prompt`.
@@ -34,7 +45,7 @@ Example request:
 }
 ```
 
-Supported model values are `llama-3.2-1b` and `llama-3.1-8b`.
+Supported model values are `llama-3.2-1b` and `llama-3.1-8b`. Each request must include a non-empty scenario of up to 2,000 characters.
 
 ## System prompt
 
@@ -46,11 +57,11 @@ Cloudflare currently provides 10,000 free Workers AI Neurons per day. If the acc
 
 ## Deploy
 
-After signing in to Wrangler, run:
+After signing in to Wrangler, deploy the current local code with:
 
 ```sh
 npm run deploy
 ```
 
-Wrangler will print the deployed `workers.dev` URL.
+This updates the existing Worker, so its URL stays the same unless you change the Worker name or domain configuration. The current live URL is [https://promptcraft-worker.promptcraft-worker.workers.dev/](https://promptcraft-worker.promptcraft-worker.workers.dev/).
 # deepai_ocr_assignment

@@ -4,8 +4,8 @@ const MODELS = {
     label: "Llama 3.2 1B (faster)"
   },
   "llama-3.1-8b": {
-    id: "@cf/meta/llama-3.1-8b-instruct-fp8",
-    label: "Llama 3.1 8B (more capable)"
+    id: "@cf/meta/llama-3.1-8b-instruct-fast",
+    label: "Llama 3.1 8B Fast (more capable)"
   }
 };
 
@@ -62,7 +62,7 @@ const PAGE = `<!doctype html>
         <label for="model">Choose a model</label>
         <select id="model" name="model">
           <option value="llama-3.2-1b">Llama 3.2 1B (faster)</option>
-          <option value="llama-3.1-8b">Llama 3.1 8B (more capable)</option>
+          <option value="llama-3.1-8b">Llama 3.1 8B Fast (more capable)</option>
         </select>
       </div>
       <div class="field">
@@ -189,7 +189,7 @@ export default {
             content: `Selected model: ${model.label}\n\nCreate a reusable prompt for this scenario. Return only the prompt, with these five headings in this order: Role, Context, Task, Constraints, Output Format. Include every heading, even when its content is brief. Role names the role the future AI should take. Context contains only the scenario facts, with placeholders for missing details. Task tells the future AI to create the requested deliverable. Constraints gives only the tone and limits in the scenario. Output Format describes the form of the deliverable without drafting it. Never invent names, dates, products, numbers, or other facts. Put each missing detail in a labeled square-bracket placeholder; never use fake examples such as #12345. Do not add arbitrary word counts or requirements. Do not add an introduction, quotation marks, sample deliverable, or finished email.\n\nScenario:\n${scenario}`
           }
         ],
-        max_tokens: 700,
+        max_tokens: 400,
         temperature: 0.2
       });
       const prompt = typeof result?.response === "string" ? result.response.trim() : "";

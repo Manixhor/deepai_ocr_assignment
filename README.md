@@ -1,32 +1,32 @@
 # PromptCraft
 
-PromptCraft turns a scenario into a copy-ready prompt using Cloudflare Workers AI. It offers two model choices:
+PromptCraft helps turn a short description of a task into a clear prompt you can paste into another AI tool. It runs on Cloudflare Workers AI and offers two choices:
 
-- **Llama 3.2 1B (faster)** for quick generation.
-- **Llama 3.1 8B Fast (more capable)** for stronger prompt generation with Cloudflare's fast 8B model variant.
+- **Quick response** uses Llama 3.2 1B.
+- **More detailed response** uses Cloudflare’s fast Llama 3.1 8B model.
 
-The Worker caps generated responses at 400 tokens to keep prompts concise and reduce generation time.
+The Worker keeps generated prompts concise with a 400-token response limit. PromptCraft creates the prompt for your task; it doesn’t complete the task itself.
 
 Live deployment: [promptcraft-worker.promptcraft-worker.workers.dev](https://promptcraft-worker.promptcraft-worker.workers.dev/)
 
 ## Run locally
 
-You need Node.js and npm. From this project folder:
+To run PromptCraft on your computer, install Node.js and npm, then run these commands from the project folder:
 
 ```sh
 npm install
 npm run dev
 ```
 
-Open the local URL printed by Wrangler. Workers AI calls use your Cloudflare account, including during local development. Sign in when Wrangler prompts you:
+Open the local address Wrangler prints. AI generation uses your Cloudflare account, so sign in first if Wrangler asks:
 
 ```sh
 npx wrangler login
 ```
 
-The Worker is connected to Workers AI through the `AI` binding in `wrangler.jsonc`.
+The `AI` binding in `wrangler.jsonc` connects the Worker to Cloudflare Workers AI.
 
-Run the automated checks with:
+To run the project’s checks:
 
 ```sh
 npm test
@@ -34,7 +34,7 @@ npm test
 
 ## API
 
-The app provides a page at `/` and a JSON endpoint at `POST /generate-prompt`.
+The web page is served at `/`. If you’re calling the API directly, send a `POST` request to `/generate-prompt` with a model and scenario:
 
 Example request:
 
@@ -45,23 +45,23 @@ Example request:
 }
 ```
 
-Supported model values are `llama-3.2-1b` and `llama-3.1-8b`. Each request must include a non-empty scenario of up to 2,000 characters.
+Use `llama-3.2-1b` for a quick response or `llama-3.1-8b` for a more detailed response. The scenario must contain text and can be up to 2,000 characters.
 
 ## System prompt
 
-The system prompt assigns the model the role of an expert prompt engineer and clearly says to create a prompt rather than complete the user's scenario. It asks for role, context, task, constraints, and output format, while telling the model not to invent missing facts and to use placeholders instead. It also keeps instructions compact for the smaller model and allows richer structure for the larger one. This gives users a prompt they can reuse with another AI tool.
+PromptCraft asks the model to write instructions for another AI, not to do the task itself. The result uses five sections—Role, Context, Task, Constraints, and Output Format—so the next AI gets the key details in a useful order. It also tells the model to stick to what the user shared and use clear placeholders for missing details. The 1B model gets guidance to keep the result brief and direct; the 8B model is asked to add useful structure and detail when the scenario supports it.
 
 ## Usage limits and errors
 
-Cloudflare currently provides 10,000 free Workers AI Neurons per day. If the account reaches that allowance, the API returns HTTP 429 with a friendly message. Invalid input and other temporary AI failures also return readable JSON errors.
+The assignment describes a free allowance of 10,000 Workers AI Neurons per day. If the daily allowance runs out, PromptCraft explains that and asks you to try again tomorrow. It also returns a helpful message if the request is incomplete or the AI service is temporarily unavailable.
 
 ## Deploy
 
-After signing in to Wrangler, deploy the current local code with:
+When you’re ready to publish your latest local changes, sign in to Wrangler and run:
 
 ```sh
 npm run deploy
 ```
 
-This updates the existing Worker, so its URL stays the same unless you change the Worker name or domain configuration. The current live URL is [https://promptcraft-worker.promptcraft-worker.workers.dev/](https://promptcraft-worker.promptcraft-worker.workers.dev/).
+This updates the existing Worker, so the address stays the same. The live app is at [promptcraft-worker.promptcraft-worker.workers.dev](https://promptcraft-worker.promptcraft-worker.workers.dev/).
 # deepai_ocr_assignment

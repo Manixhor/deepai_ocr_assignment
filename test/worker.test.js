@@ -67,23 +67,43 @@ test("generation endpoint rejects scenarios over 2,000 characters", async () => 
 
 test("valid requests call the selected 8B model and return its prompt", async () => {
   let calledModel;
+  let sentPromptGuidance;
   const response = await worker.fetch(
     makeRequest("POST", "/generate-prompt", {
       model: "llama-3.1-8b",
       scenario: "Write a polite note"
     }),
-    mockEnv(async (model) => {
+    mockEnv(async (model, options) => {
       calledModel = model;
+      sentPromptGuidance = options.messages[1].content;
       return { response: "Role: Writer" };
     })
   );
 
   assert.equal(response.status, 200);
   assert.equal(calledModel, "@cf/meta/llama-3.1-8b-instruct-fast");
+  assert.match(sentPromptGuidance, /extra capacity/);
   assert.deepEqual(await response.json(), {
     prompt: "Role: Writer",
     model: "@cf/meta/llama-3.1-8b-instruct-fast"
   });
+});
+
+test("the faster model receives concise prompt-writing guidance", async () => {
+  let sentPromptGuidance;
+  const response = await worker.fetch(
+    makeRequest("POST", "/generate-prompt", {
+      model: "llama-3.2-1b",
+      scenario: "Write a polite note"
+    }),
+    mockEnv(async (_model, options) => {
+      sentPromptGuidance = options.messages[1].content;
+      return { response: "Role: Writer" };
+    })
+  );
+
+  assert.equal(response.status, 200);
+  assert.match(sentPromptGuidance, /smaller, faster model/);
 });
 
 test("daily Workers AI exhaustion returns a friendly 429", async () => {
@@ -98,7 +118,7 @@ test("daily Workers AI exhaustion returns a friendly 429", async () => {
   );
 
   assert.equal(response.status, 429);
-  assert.match((await response.json()).error, /allowance has been used/);
+  assert.match((await response.json()).error, /try again tomorrow/);
 });
 
 test("other Workers AI errors return a friendly 502", async () => {
@@ -113,7 +133,7 @@ test("other Workers AI errors return a friendly 502", async () => {
   );
 
   assert.equal(response.status, 502);
-  assert.match((await response.json()).error, /temporarily unavailable/);
+  assert.match((await response.json()).error, /try again in a moment/);
 });
 
 test("an empty model response returns a friendly 502", async () => {
@@ -126,5 +146,5 @@ test("an empty model response returns a friendly 502", async () => {
   );
 
   assert.equal(response.status, 502);
-  assert.match((await response.json()).error, /empty result/);
+  assert.match((await response.json()).error, /didn’t get a prompt back/);
 });
